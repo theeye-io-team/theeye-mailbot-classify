@@ -75,12 +75,17 @@ const main = module.exports = async () => {
 
     progress++
 
-    const messages = await mailBot.searchMessages(
-      Object.assign({}, filter, {
-        since: (new Date(DateTime.fromISO(Helpers.timeExpressionToDate(thresholds.start, timezone).toISOString()).plus({hours:-config.searchSince}))).toISOString()
-        // since: runtimeDate
-      })
-    )
+    const searchSinceModifier = (config.searchSince || 12)
+    const since = new Date(
+      DateTime.fromISO(
+        Helpers.timeExpressionToDate(
+          thresholds.start,
+          timezone
+        ).toISOString()
+      ).plus({ hours: -searchSinceModifier })
+    ).toISOString()
+
+    const messages = await mailBot.searchMessages(Object.assign({}, filter, { since }))
 
     let found = false
 
