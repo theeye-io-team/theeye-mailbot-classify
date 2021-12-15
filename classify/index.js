@@ -71,15 +71,24 @@ const main = module.exports = async () => {
     const messages = await mailBot.searchMessages(
       Object.assign({}, filter, {
         since: (new Date(DateTime.fromISO(Helpers.timeExpressionToDate(thresholds.start, timezone).toISOString()).plus({hours:-config.searchSince}))).toISOString()
-        // since: runtimeDate
       })
     )
 
     let found = false
 
+    const getCurrentLifecycle = (data) => {
+      if (data.result.state === 'normal') { return 'normal' }
+      if (data.result.severity === 'low') { return 'low' }
+      if (data.result.severity === 'high') { return 'high' }
+      if (data.result.severity === 'critical') { return 'critical' }
+      return 'initial'
+    }
+
     if (messages.length > 0) {
       for (const message of messages) {
         await message.getContent()
+
+        console.log(`original mail date is ${message.date}`)
 
         let mailDate
         if (filter.ignoreMessageTimezone === true) {
@@ -87,10 +96,11 @@ const main = module.exports = async () => {
         } else {
           mailDate = setTimezone(message.date, timezone)
         }
-        console.log(`mail date is ${mailDate}`)
+
+        console.log(`parsed mail date is ${mailDate}`)
 
         // ignore old messages
-        if (mailDate > runtimeDate) {
+        if (mailDate > runtimeDate) { // current day
           found = true
 
           const { state, severity } = indicatorState(mailDate, lowFilterDate, highFilterDate, criticalFilterDate)
@@ -100,10 +110,12 @@ const main = module.exports = async () => {
           cacheData[filterHash].data.result.severity = severity
           cacheData[filterHash].processed = true
 
+          cacheData[filterHash].data.lifecycle = getCurrentLifecycle(cacheData[filterHash].data)
+
           await message.move()
           classificationCache.setHashData(filterHash, cacheData[filterHash])
         } else {
-          console.log('Old message')
+          console.log('old message')
         }
       }
     }
@@ -119,6 +131,7 @@ const main = module.exports = async () => {
 
       cacheData[filterHash].data.result.state = state
       cacheData[filterHash].data.result.severity = severity
+      cacheData[filterHash].data.result.lifecycle = getCurrentLifecycle(cacheData[filterHash].data)
 
       classificationCache.setHashData(filterHash, cacheData[filterHash])
 

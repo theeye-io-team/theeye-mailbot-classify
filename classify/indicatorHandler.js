@@ -241,26 +241,49 @@ module.exports = {
 
 }
 
+const LifecycleStyles = []
+LifecycleStyles['initial'] = '#ffffff'
+LifecycleStyles['normal'] = '#50d841'
+LifecycleStyles['low'] = '#ffe400'
+LifecycleStyles['high'] = '#ff8640'
+LifecycleStyles['critical'] = '#ff4d4d'
+
 const applyResultStyles = (filterData) => {
+  // initial -> estado inicial
   let resultStyle = resultStandby
   let resultData = 'Waiting'
 
-  if (filterData.result.severity === 'critical' && filterData.result.state === 'failure') {
-    resultStyle = resultCritical
+  if (filterData.lifecycle === 'initial') {
+    resultData = 'Waiting'
+    resultStyle = resultStandby
+  }
+
+  // low -> paso el primer nivel y no lo encontró
+  if (
+    filterData.result.severity === 'low' &&
+    filterData.result.state === 'failure'
+  ) {
+    resultStyle = resultLow
     if (filterData.solved) {
       resultData = 'Late'
     }
   }
 
-  if (filterData.result.severity === 'high' && filterData.result.state === 'failure') {
+  if (
+    filterData.result.severity === 'high' &&
+    filterData.result.state === 'failure'
+  ) {
     resultStyle = resultHigh
     if (filterData.solved) {
       resultData = 'Late'
     }
   }
 
-  if (filterData.result.severity === 'low' && filterData.result.state === 'failure') {
-    resultStyle = resultLow
+  if (
+    filterData.result.severity === 'critical' &&
+    filterData.result.state === 'failure'
+  ) {
+    resultStyle = resultCritical
     if (filterData.solved) {
       resultData = 'Late'
     }
