@@ -1,5 +1,6 @@
 const { DateTime } = require('luxon')
 const config = require('../lib/config').decrypt()
+const holidays = require(process.env.HOLIDAYS || '../config/feriados.json')
 
 const getTimeArray = (time) => {
   return {
@@ -8,11 +9,13 @@ const getTimeArray = (time) => {
   }
 }
 
-const checkWeekend = () => {
-  const currentTime = DateTime.fromFormat('17012022', 'ddMMyyyy').setZone(config.timezone)
-  const timeArray = getTimeArray(config.startOfDay)
-  const startTime = DateTime.now().setZone(config.timezone).set({ hour: timeArray.hour, minute: timeArray.min })
+const currentTime = DateTime.now().setZone(config.timezone)
+const currentDate = currentTime.startOf('day')
+const timeArray = getTimeArray(config.startOfDay)
+const startTime = DateTime.now().setZone(config.timezone).set({ hour: timeArray.hour, minute: timeArray.min })
 
+const checkWeekend = () => {
+  console.log('checkWeekend')
   const def = {
     currentTime: currentTime.toISO(),
     startTime: startTime.toISO(),
@@ -40,9 +43,43 @@ const checkWeekend = () => {
       throw new Error('Weekend: Sunday')
     }
   }
+
+  console.log('Not a weekend')
 }
 
 const checkHoliday = () => {
+  console.log('checkHoliday')
+
+  const yesterday = DateTime.now().setZone(config.timezone).plus({days:-1}).startOf('day')
+
+  const def = {
+    currentTime: currentTime.toISO(),
+    startTime: startTime.toISO(),
+    dayOfWeek: currentTime.weekdayLong,
+    startOfDay: {
+      time: config.startOfDay,
+      timeArray
+    }
+  }
+
+  console.log(def)
+
+  for(const holiday of holidays) {
+    const holidayDate = DateTime.fromFormat(holiday,'dd-MM-yyyy').setZone(config.timezone)
+
+    if(currentDate.equals(holidayDate)) {
+      throw new Error(`Holiday: ${holiday}`)
+    }
+
+    if(yesterday.equals(holidayDate)) {
+      if(currentTime <= startTime) {
+        throw new Error(`Holiday: ${holiday}`)
+      }
+    }
+
+  }
+
+  console.log('Not a holiday')
 
 }
 
