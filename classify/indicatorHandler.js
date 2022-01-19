@@ -101,7 +101,6 @@ module.exports = {
     value = (elements <= 1 && progressDetail) ? `<span style="color:${resultNormal}; font-size:26px; font-weigth:bold"; font>Nothing to worry about<span>` : value + '</tbody> </table>'
 
     const titleDate = `${DateTime.fromJSDate(new Date(classificationData.data.runtimeDate)).toFormat('dd-MM-yyyy')}`
-    const indicatorOrder = `${DateTime.fromJSDate(new Date(classificationData.data.runtimeDate)).toFormat('yyyyMMdd')}`
 
     const titleDefinition = (progressDetail && !onlyWaiting ? 
       config.indicator_titles?.progress_detail || 'Progress Detail' : 
@@ -124,10 +123,11 @@ module.exports = {
           }
       }
     } else {
-      indicator.order = progressDetail ? 1 : Number(indicatorOrder)
+      indicator.order = progressDetail ? 1 : 100
       indicator.value = value
       indicator.state = ''
       indicator.severity = 'low'
+      indicator.tags = progressDetail ? [] : ['summary']
       indicator.acl = (elements <= 1 && progressDetail) ? [] : acl
       promise = indicator.put()
     }
