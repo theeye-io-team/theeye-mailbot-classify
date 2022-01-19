@@ -65,7 +65,7 @@ const checkHoliday = () => {
   console.log(def)
 
   for(const holiday of holidays) {
-    const holidayDate = DateTime.fromFormat(holiday,'dd-MM-yyyy').setZone(config.timezone)
+    const holidayDate = DateTime.fromFormat(holiday,'dd-MM-yyyy', {zone:config.timezone})
 
     console.log({holidayDate:holidayDate.toISO(), currentDate: currentDate.toISO(), yesterdayDate:yesterdayDate.toISO()})
 
