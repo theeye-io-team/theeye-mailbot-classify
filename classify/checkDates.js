@@ -10,9 +10,9 @@ const getTimeArray = (time) => {
 }
 
 const checkWeekend = () => {
-    const currentTime = DateTime.fromFormat('17012022','ddMMyyyy').setZone(config.timezone).set({hour:12})
+    const currentTime = DateTime.now().setZone(config.timezone)
     const timeArray = getTimeArray(config.startOfDay)
-    const startTime = DateTime.fromFormat('17012022','ddMMyyyy').setZone(config.timezone).set({hour: timeArray.hour, minute:timeArray.min})
+    const startTime = DateTime.now().setZone(config.timezone).set({hour: timeArray.hour, minute:timeArray.min})
 
     const def = {
         currentTime:currentTime.toISO(), 
@@ -41,7 +41,7 @@ const checkWeekend = () => {
 }
 
 const checkHoliday = () => {
-    
+
 }
 
 
