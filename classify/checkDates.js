@@ -67,7 +67,7 @@ const checkHoliday = () => {
   for(const holiday of holidays) {
     const holidayDate = DateTime.fromFormat(holiday,'dd-MM-yyyy').setZone(config.timezone)
 
-    console.log({holidayDate, currentDate, yesterdayDate})
+    console.log({holidayDate:holidayDate.toISO(), currentDate: currentDate.toISO(), yesterdayDate:yesterdayDate.toISO()})
 
     if(currentDate.equals(holidayDate)) {
       throw new Error(`Holiday: ${holiday}`)
