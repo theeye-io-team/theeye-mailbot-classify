@@ -14,7 +14,6 @@ const nodemailer = require('nodemailer')
 const filters = require('../../filters')
 
 const main = module.exports = async () => {
-
   const cache = new Cache({ cacheId: CACHE_NAME })
   const cacheData = cache.get()
 
@@ -30,13 +29,11 @@ const main = module.exports = async () => {
   const runtimeDate = DateTime.fromISO(new Date(classifyCacheData.runtimeDate).toISOString())
   console.log(`runtime date is set to ${runtimeDate}`)
 
-
   for (const filter of filters) {
     const hash = createHash(JSON.stringify(filter))
     const thresholds = filter.thresholdTimes
-    const startDate = 
+    const startDate =
       Helpers.getFormattedThresholdDate(thresholds.start, timezone, runtimeDate, config.startOfDay)
-    
 
     if (startDate > currentDate) {
       console.log(`waiting until ${startDate}`)
@@ -48,7 +45,7 @@ const main = module.exports = async () => {
       continue
     }
 
-    if(!randomSend(10, 50)) {
+    if (!randomSend(10, 50)) {
       console.log('didnt pass chance check, wont send yet')
       continue
     }
@@ -77,13 +74,11 @@ const createHash = (string) => {
 }
 
 const randomSend = (max, chance) => {
-
   const number = Math.floor(Math.random() * max)
-  if(number < chance*max/100) {
+  if (number < chance * max / 100) {
     return true
   }
 }
-
 
 if (require.main === module) {
   main().then(console.log).catch(console.error)

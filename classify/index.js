@@ -152,7 +152,7 @@ const main = module.exports = async () => {
     const acls = getAcls()
     if (!acls) { return }
     const aclsAll = [].concat(acls.manager, acls.operator, acls.administrator)
-    
+
     return Promise.all([
       IndicatorHandler.handleProgressIndicator(progress * 100 / filters.length, timezone, generalSeverity, generalState, aclsAll).catch(err => err),
       IndicatorHandler.handleSummaryIndicator(orderedCache, progressDetail = false, onlyWaiting = false, acls.administrator).catch(err => err),
@@ -187,7 +187,7 @@ const getAcls = () => {
   return {
     manager: init('manager'),
     operator: init('operator'),
-    administrator: init('administrator'),
+    administrator: init('administrator')
   }
 }
 
@@ -261,7 +261,6 @@ const setTimezone = (date, timezone) => {
  */
 
 const sendAlert = async (filter, state, severity) => {
-
   const recipients = getAcls()
   if (!recipients) {
     console.log('Notification: no recipients defined')

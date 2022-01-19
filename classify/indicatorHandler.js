@@ -91,7 +91,7 @@ module.exports = {
           value = value + filterValue
         }
 
-        if(progressDetail && onlyWaiting && filterData.result.state && filterData.result.state != 'normal' && !filterData.solved) {
+        if (progressDetail && onlyWaiting && filterData.result.state && filterData.result.state != 'normal' && !filterData.solved) {
           elements++
           value = value + filterValue
         }
@@ -102,25 +102,25 @@ module.exports = {
 
     const titleDate = `${DateTime.fromJSDate(new Date(classificationData.data.runtimeDate)).toFormat('dd-MM-yyyy')}`
 
-    const titleDefinition = (progressDetail && !onlyWaiting ? 
-      config.indicator_titles?.progress_detail || 'Progress Detail' : 
-      progressDetail && onlyWaiting ?
-        config.indicator_titles?.progress_detail_only_waiting || 'Progress Detail 2' :
-        (/%DATE%/gi).test(config.indicator_titles?.summary) ? 
-          config.indicator_titles?.summary.replace(/%DATE%/gi, titleDate) :
-          `${config.indicator_titles?.summary} ${titleDate}`)
+    const titleDefinition = (progressDetail && !onlyWaiting
+      ? config.indicator_titles?.progress_detail || 'Progress Detail'
+      : progressDetail && onlyWaiting
+        ? config.indicator_titles?.progress_detail_only_waiting || 'Progress Detail 2'
+        : (/%DATE%/gi).test(config.indicator_titles?.summary)
+            ? config.indicator_titles?.summary.replace(/%DATE%/gi, titleDate)
+            : `${config.indicator_titles?.summary} ${titleDate}`)
 
     const indicator = new TheEyeIndicator(titleDefinition)
     indicator.accessToken = config.api.accessToken
-    
+
     let promise
     if (progressDetail && onlyWaiting && elements <= 1) {
       const indicators = await indicator.Fetch()
 
       for (const data of indicators) {
-          if(data.title === titleDefinition) {
-            promise = indicator.remove()
-          }
+        if (data.title === titleDefinition) {
+          promise = indicator.remove()
+        }
       }
     } else {
       indicator.order = progressDetail ? 1 : 100
@@ -196,12 +196,11 @@ module.exports = {
         const filterData = classificationData.data[eachFilter].data
         const dataToPush = { start: filterData.start, low: filterData.low, high: filterData.high, critical: filterData.critical, solved: filterData.solved, index: eachFilter }
 
-        Helpers.getFormattedThresholdDate(dataToPush.start, config.timezone, runtimeDate, config.startOfDay) > DateTime.now() ? 
-          futureFilters.push(dataToPush) : 
-            filterData.solved ?
-              pastFilters.push(dataToPush) :
-              currentFilters.push(dataToPush)
-
+        Helpers.getFormattedThresholdDate(dataToPush.start, config.timezone, runtimeDate, config.startOfDay) > DateTime.now()
+          ? futureFilters.push(dataToPush)
+          : filterData.solved
+            ? pastFilters.push(dataToPush)
+            : currentFilters.push(dataToPush)
       } else {
         runtimeDate = DateTime.fromISO(new Date(classificationData.data[eachFilter]).toISOString())
       }
@@ -217,7 +216,7 @@ module.exports = {
         }
       }
     }
-    
+
     for (const eachFilter of currentFilters) {
       value = value + addRow(classificationData.data[eachFilter.index].data, 'Actual')
     }
