@@ -32,6 +32,10 @@ const checkWeekend = () => {
         }
     }
 
+    if(def.dayOfWeek === 'Sunday') {
+        throw new Error('Weekend: Sunday')
+    }
+
     if(def.dayOfWeek === 'Monday') {
         if(currentTime <= startTime) {
             throw new Error('Weekend: Sunday')
