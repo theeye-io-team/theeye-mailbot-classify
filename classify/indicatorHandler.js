@@ -123,7 +123,7 @@ module.exports = {
         }
       }
     } else {
-      indicator.order = progressDetail ? 1 : 100
+      indicator.order = progressDetail ? 1 : 99
       indicator.value = value
       indicator.state = ''
       indicator.severity = 'low'
