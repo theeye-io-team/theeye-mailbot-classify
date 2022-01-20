@@ -4,6 +4,7 @@ const { DateTime } = require('luxon')
 const Helpers = require('../lib/helpers')
 const TheEyeIndicator = require('../lib/indicator')
 const config = require('../lib/config').decrypt()
+TheEyeIndicator.accessToken = config.api.accessToken
 
 // STYLES
 
