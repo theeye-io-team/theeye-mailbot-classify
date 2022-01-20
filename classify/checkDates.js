@@ -11,7 +11,7 @@ const getTimeArray = (time) => {
 
 const currentTime = DateTime.now().setZone(config.timezone)
 const currentDate = currentTime.startOf('day')
-const yesterdayDate = DateTime.now().setZone(config.timezone).plus({days:-1}).startOf('day')
+const yesterdayDate = DateTime.now().setZone(config.timezone).plus({ days: -1 }).startOf('day')
 const timeArray = getTimeArray(config.startOfDay)
 const startTime = DateTime.now().setZone(config.timezone).set({ hour: timeArray.hour, minute: timeArray.min })
 
@@ -51,7 +51,6 @@ const checkWeekend = () => {
 const checkHoliday = () => {
   console.log('checkHoliday')
 
-
   const def = {
     currentTime: currentTime.toISO(),
     startTime: startTime.toISO(),
@@ -64,28 +63,26 @@ const checkHoliday = () => {
 
   console.log(def)
 
-  for(const holiday of holidays) {
-    const holidayDate = DateTime.fromFormat(holiday,'dd-MM-yyyy', {zone:config.timezone})
-    const holidayTime = holidayDate.set({hour:timeArray.hour, minute:timeArray.min})
+  for (const holiday of holidays) {
+    const holidayDate = DateTime.fromFormat(holiday, 'dd-MM-yyyy', { zone: config.timezone })
+    const holidayTime = holidayDate.set({ hour: timeArray.hour, minute: timeArray.min })
 
-    console.log({holidayDate:holidayDate.toISO(), currentDate: currentDate.toISO(), yesterdayDate:yesterdayDate.toISO()})
+    console.log({ holidayDate: holidayDate.toISO(), currentDate: currentDate.toISO(), yesterdayDate: yesterdayDate.toISO() })
 
-    if(currentDate.equals(holidayDate)) {
-      if(currentTime>holidayTime) {
+    if (currentDate.equals(holidayDate)) {
+      if (currentTime > holidayTime) {
         throw new Error(`Holiday: ${holiday}`)
       }
     }
 
-    if(yesterdayDate.equals(holidayDate)) {
-      if(currentTime < startTime) {
+    if (yesterdayDate.equals(holidayDate)) {
+      if (currentTime < startTime) {
         throw new Error(`Holiday: ${holiday}`)
       }
     }
-
   }
 
   console.log('Not a holiday')
-
 }
 
 const main = module.exports = async () => {

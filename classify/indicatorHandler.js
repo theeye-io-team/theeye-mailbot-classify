@@ -24,7 +24,7 @@ module.exports = {
     let order = 1000
     const resp = await TheEyeIndicator.Fetch()
     const indicators = JSON.parse(resp.body)
-    const taggedIndicators = indicators.filter(indicator=>indicator.tags.indexOf(tag) !== -1)
+    const taggedIndicators = indicators.filter(indicator => indicator.tags.indexOf(tag) !== -1)
 
     taggedIndicators.sort((elem1, elem2) => {
       const elem1Date = DateTime.fromISO(elem1.creation_date)
@@ -41,11 +41,11 @@ module.exports = {
     for (const data of taggedIndicators) {
       const indicator = new TheEyeIndicator(data.title, data.type)
       indicator.accessToken = config.api.accessToken
-      await indicator.patch({order})
+      await indicator.patch({ order })
       order++
     }
   },
-  
+
   handleProgressIndicator (progress, timezone, severity, state, acl) {
     const indicator = new TheEyeIndicator(config.indicator_titles?.progress || 'Progress')
     indicator.order = 0

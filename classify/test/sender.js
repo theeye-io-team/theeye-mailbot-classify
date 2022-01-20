@@ -4,7 +4,7 @@ const crypto = require('crypto')
 const CACHE_NAME = 'sender'
 const DEFAULT_CACHE_NAME = 'classification'
 const { DateTime } = require('luxon')
-const sendmail = require('theeye-bot-sdk/core/mail/sender')
+// const sendmail = require('theeye-bot-sdk/core/mail/sender')
 
 const ClassificationCache = require('../cache')
 const Cache = require('../../lib/cache')
