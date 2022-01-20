@@ -164,6 +164,8 @@ const main = module.exports = async () => {
 
   await updateIndicators()
 
+  await IndicatorHandler.orderIndicators('summary')
+
   await mailBot.closeConnection()
 
   return 'ok'

@@ -18,6 +18,33 @@ const resultNormal = '#50d841'
 const resultStandby = '#ffffff'
 
 module.exports = {
+
+  async orderIndicators (tag) {
+    let order = 1000
+    const resp = await TheEyeIndicator.Fetch()
+    const indicators = JSON.parse(resp.body)
+    const taggedIndicators = indicators.filter(indicator=>indicator.tags.indexOf(tag) !== -1)
+
+    taggedIndicators.sort((elem1, elem2) => {
+      const elem1Date = DateTime.fromISO(elem1.creation_date)
+      const elem2Date = DateTime.fromISO(elem2.creation_date)
+      if (elem1Date > elem2Date) {
+        return -1
+      }
+      if (elem1Date < elem2Date) {
+        return 1
+      }
+      return 0
+    })
+
+    for (const data of taggedIndicators) {
+      const indicator = new TheEyeIndicator(data.title, data.type)
+      indicator.accessToken = config.api.accessToken
+      await indicator.patch({order})
+      order++
+    }
+  },
+  
   handleProgressIndicator (progress, timezone, severity, state, acl) {
     const indicator = new TheEyeIndicator(config.indicator_titles?.progress || 'Progress')
     indicator.order = 0
@@ -113,7 +140,7 @@ module.exports = {
     const indicator = new TheEyeIndicator(titleDefinition)
     indicator.accessToken = config.api.accessToken
 
-    let promise
+    let promise = []
     if (progressDetail && onlyWaiting && elements <= 1) {
       const indicators = await indicator.Fetch()
 
@@ -123,7 +150,7 @@ module.exports = {
         }
       }
     } else {
-      indicator.order = progressDetail ? 1 : 99
+      indicator.order = progressDetail ? 1 : 100
       indicator.value = value
       indicator.state = ''
       indicator.severity = 'low'
