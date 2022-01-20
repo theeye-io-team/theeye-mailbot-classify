@@ -66,15 +66,18 @@ const checkHoliday = () => {
 
   for(const holiday of holidays) {
     const holidayDate = DateTime.fromFormat(holiday,'dd-MM-yyyy', {zone:config.timezone})
+    const holidayTime = holidayDate.set({hour:timeArray.hour, minute:timeArray.min})
 
     console.log({holidayDate:holidayDate.toISO(), currentDate: currentDate.toISO(), yesterdayDate:yesterdayDate.toISO()})
 
     if(currentDate.equals(holidayDate)) {
-      throw new Error(`Holiday: ${holiday}`)
+      if(currentTime>holidayTime) {
+        throw new Error(`Holiday: ${holiday}`)
+      }
     }
 
     if(yesterdayDate.equals(holidayDate)) {
-      if(currentTime <= startTime) {
+      if(currentTime < startTime) {
         throw new Error(`Holiday: ${holiday}`)
       }
     }
