@@ -142,8 +142,10 @@ module.exports = {
     indicator.accessToken = config.api.accessToken
 
     let promise
+    console.log(progressDetail, onlyWaiting, elements)
     if (progressDetail && onlyWaiting && elements <= 1) {
       const indicators = await indicator.Fetch()
+      console.log(indicators)
 
       for (const data of indicators) {
         if (data.title === titleDefinition) {
