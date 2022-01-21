@@ -146,6 +146,7 @@ module.exports = {
     if (progressDetail && onlyWaiting && elements <= 1) {
       const indicators = await indicator.Fetch()
       console.log(indicators)
+      console.log('here')
 
       for (const data of indicators) {
         if (data.title === titleDefinition) {
