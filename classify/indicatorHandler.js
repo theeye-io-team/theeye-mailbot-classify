@@ -119,7 +119,7 @@ module.exports = {
           value = value + filterValue
         }
 
-        if (progressDetail && onlyWaiting && filterData.result.state && filterData.result.state != 'normal' && !filterData.solved) {
+        if (progressDetail && onlyWaiting && filterData.result.state && filterData.result.state !== 'normal' && !filterData.solved) {
           elements++
           value = value + filterValue
         }

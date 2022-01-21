@@ -144,14 +144,11 @@ const main = module.exports = async () => {
     }
   }
 
-  console.log('-------------------')
-
-  const orderedCache = Helpers.orderCache(classificationCache, timezone, runtimeDate, config.startOfDay)
-
   const updateIndicators = () => {
     const acls = getAcls()
     if (!acls) { return }
     const aclsAll = [].concat(acls.manager, acls.operator, acls.administrator)
+    const orderedCache = Helpers.orderCache(classificationCache, timezone, runtimeDate, config.startOfDay)
 
     return Promise.all([
       IndicatorHandler.handleProgressIndicator(progress * 100 / filters.length, timezone, generalSeverity, generalState, aclsAll).catch(err => err),
