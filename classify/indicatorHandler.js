@@ -142,15 +142,11 @@ module.exports = {
     indicator.accessToken = config.api.accessToken
 
     let promise
-    console.log(progressDetail, onlyWaiting, elements <= 1)
     if (progressDetail && onlyWaiting && elements <= 1) {
-      const indicators = await indicator.Fetch()
-      console.log(indicators)
-      console.log('here')
-
+      const resp = await TheEyeIndicator.Fetch()
+      const indicators = JSON.parse(resp.body)
       for (const data of indicators) {
         if (data.title === titleDefinition) {
-          console.log('Found indicator to delete')
           promise = indicator.remove()
         }
       }
