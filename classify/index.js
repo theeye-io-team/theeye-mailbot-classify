@@ -1,7 +1,7 @@
 require('dotenv').config()
 
 // default values
-const DEFAULT_CACHE_NAME = 'classification'
+const DEFAULT_CACHE_NAME = process.env.DEFAULT_CACHE_NAME || 'classification'
 
 const { DateTime } = require('luxon')
 
@@ -20,10 +20,12 @@ if (process.env.USE_SERVER_RECEIVED_DATE === 'true') {
   console.log('Global env USE_SERVER_RECEIVED_DATE activated')
 }
 
-const main = module.exports = async () => {
+const main = module.exports = async (dateParam) => {
   const { timezone } = config
 
-  const cacheName = buildCacheName(config)
+  const cacheName = `${buildCacheName(dateParam)}_${DEFAULT_CACHE_NAME}`
+
+  console.log({cacheName})
 
   const classificationCache = new ClassificationCache({
     cacheId: cacheName,
@@ -402,10 +404,28 @@ const buildRuntimeDate = ({ startOfDay, timezone }) => {
   return new Date(isoString)
 }
 
-const buildCacheName = () => {
+/**
+ * Returns the classification cache date
+ * @param {string} date OPTIONAL: string to force a runtime date format yyyyMMdd (ex: 20220318)
+ * @returns 
+ */
+
+const buildCacheName = (date) => {
+
+  const currentDate = date ? DateTime.fromFormat(date, 'yyyyMMdd').setZone(config.timezone) : DateTime.now().setZone(config.timezone)
+  const startDate = Helpers.timeExpressionToDateLuxon(config.startOfDay, config.timezone, currentDate.toJSDate())
+  console.log({date,currentDate, startDate, isAfter: currentDate > startDate, isBefore: currentDate < startDate})
+
+  if(currentDate > startDate) {
+    return currentDate.toFormat('yyyyMMdd')
+  }
+
+  if(currentDate < startDate) {
+    return currentDate.plus({days: -1}).toFormat('yyyyMMdd')
+  }
 
 }
 
 if (require.main === module) {
-  main().then(console.log).catch(console.error)
+  main(process.argv[2]).then(console.log).catch(console.error)
 }
