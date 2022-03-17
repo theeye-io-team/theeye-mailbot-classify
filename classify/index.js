@@ -23,8 +23,10 @@ if (process.env.USE_SERVER_RECEIVED_DATE === 'true') {
 const main = module.exports = async () => {
   const { timezone } = config
 
+  const cacheName = buildCacheName(config)
+
   const classificationCache = new ClassificationCache({
-    cacheId: (config.cacheName || DEFAULT_CACHE_NAME),
+    cacheId: cacheName,
     runtimeDate: buildRuntimeDate(config)
   })
 
@@ -89,6 +91,9 @@ const main = module.exports = async () => {
     let found = false
 
     if (messages.length > 0) {
+      //
+      // que pasa si hay mas de 1 con el mismo criterio ??
+      //
       for (const message of messages) {
         await message.getContent()
 
@@ -97,6 +102,9 @@ const main = module.exports = async () => {
 
         // ignore old messages
         if (mailDate > runtimeDate) {
+          //
+          // que pasa si agarra uno del día anterior que se retrazo tanto o que arranca antes 
+          //
           found = true
 
           const { state, severity } = indicatorState(mailDate, lowFilterDate, highFilterDate, criticalFilterDate)
@@ -392,6 +400,10 @@ const buildRuntimeDate = ({ startOfDay, timezone }) => {
 
   const isoString = runtimeDate.set({ hours, minutes, seconds: 0 }).toISO()
   return new Date(isoString)
+}
+
+const buildCacheName = () => {
+
 }
 
 if (require.main === module) {
