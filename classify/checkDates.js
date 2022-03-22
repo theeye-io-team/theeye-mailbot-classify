@@ -62,9 +62,9 @@ const checkHoliday = (def) => {
 
 const main = module.exports = async (datetime) => {
 
-  console.log(datetime)
+  console.log({datetime})
 
-  const currentTime = datetime ? DateTime.fromISO(datetime).setZone(config.timezone) : DateTime.now().setZone(config.timezone)
+  const currentTime = new Date(datetime).toString() !== 'Invalid Date' ? DateTime.fromISO(datetime).setZone(config.timezone) : DateTime.now().setZone(config.timezone)
   const timeArray = getTimeArray(config.startOfDay)
 
   const def = {
@@ -78,6 +78,18 @@ const main = module.exports = async (datetime) => {
       timeArray
     }
   }
+
+  console.log({
+    currentTime: def.currentTime.toISO(),
+    currentDate: def.currentDate.toISO(),
+    yesterdayDate: def.yesterdayDate.toISO(),
+    startTime: def.startTime.toISO(),
+    dayOfWeek: currentTime.weekdayLong,
+    startOfDay: {
+      time: config.startOfDay,
+      timeArray
+    }
+  })
 
   checkWeekend(def)
   checkHoliday(def)
