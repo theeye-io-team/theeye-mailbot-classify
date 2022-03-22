@@ -62,7 +62,7 @@ const checkHoliday = (def) => {
 
 const main = module.exports = async (datetime) => {
 
-  const currentTime = datetime ? DateTime.fromJSDate(datetime).setZone(config.timezone) : DateTime.now().setZone(config.timezone)
+  const currentTime = datetime ? DateTime.fromISO(datetime).setZone(config.timezone) : DateTime.now().setZone(config.timezone)
   const timeArray = getTimeArray(config.startOfDay)
 
   const def = {
