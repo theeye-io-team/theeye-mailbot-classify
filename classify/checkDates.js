@@ -45,13 +45,13 @@ const checkHoliday = (def) => {
     console.log({ holidayDate: holidayDate.toISO(), currentDate: def.currentDate.toISO(), yesterdayDate: def.yesterdayDate.toISO() })
 
     if (def.currentDate.equals(holidayDate)) {
-      if (def.currentTime > holidayTime) {
+      if (def.currentTime >= holidayTime) {
         throw new Error(`Holiday: ${holiday}`)
       }
     }
 
     if (def.yesterdayDate.equals(holidayDate)) {
-      if (def.currentTime < def.startTime) {
+      if (def.currentTime <= def.startTime) {
         throw new Error(`Holiday: ${holiday}`)
       }
     }
