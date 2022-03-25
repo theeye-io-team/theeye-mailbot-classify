@@ -412,15 +412,13 @@ const buildRuntimeDate = ({ startOfDay, timezone }) => {
 
 const buildCacheName = (date) => {
 
-  const currentDate = date ? DateTime.fromFormat(date, 'yyyyMMdd').setZone(config.timezone) : DateTime.now().setZone(config.timezone)
+  const currentDate = date ? DateTime.fromISO(date).setZone(config.timezone) : DateTime.now().setZone(config.timezone)
   const startDate = Helpers.timeExpressionToDateLuxon(config.startOfDay, config.timezone, currentDate.toJSDate())
   console.log({date,currentDate, startDate, isAfter: currentDate > startDate, isBefore: currentDate < startDate})
 
   if(currentDate >= startDate) {
     return currentDate.toFormat('yyyyMMdd')
-  }
-
-  if(currentDate <= startDate) {
+  } else {
     return currentDate.plus({days: -1}).toFormat('yyyyMMdd')
   }
 
