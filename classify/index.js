@@ -416,11 +416,11 @@ const buildCacheName = (date) => {
   const startDate = Helpers.timeExpressionToDateLuxon(config.startOfDay, config.timezone, currentDate.toJSDate())
   console.log({date,currentDate, startDate, isAfter: currentDate > startDate, isBefore: currentDate < startDate})
 
-  if(currentDate > startDate) {
+  if(currentDate >= startDate) {
     return currentDate.toFormat('yyyyMMdd')
   }
 
-  if(currentDate < startDate) {
+  if(currentDate <= startDate) {
     return currentDate.plus({days: -1}).toFormat('yyyyMMdd')
   }
 
