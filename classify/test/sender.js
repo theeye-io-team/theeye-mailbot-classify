@@ -60,12 +60,12 @@ const main = module.exports = async (dateParam) => {
 
     const transport = nodemailer.createTransport(config.sender.transport)
     console.log('sending email')
-    // await transport.sendMail({
-    //   from: config.from,
-    //   subject: filter.subject,
-    //   to: 'patricia-theeye@outlook.com',
-    //   html: filter.body
-    // })
+    await transport.sendMail({
+      from: config.from,
+      subject: filter.subject,
+      to: 'patricia-theeye@outlook.com',
+      html: filter.body
+    })
 
     cacheData[hash] = true
   }
