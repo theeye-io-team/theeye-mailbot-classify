@@ -60,7 +60,7 @@ const checkHoliday = (def) => {
   console.log('Not a holiday')
 }
 
-const main = module.exports = async (datetime) => {
+const main = module.exports = async (datetime = null) => {
 
   console.log({datetime})
 
