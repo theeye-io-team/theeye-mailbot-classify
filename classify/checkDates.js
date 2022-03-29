@@ -64,7 +64,17 @@ const main = module.exports = async (datetime) => {
 
   console.log({datetime})
 
-  const currentTime = new Date(datetime).toString() !== 'Invalid Date' ? DateTime.fromISO(datetime).setZone(config.timezone) : DateTime.now().setZone(config.timezone)
+  const isValidDateString = function (datestr) {
+    return (datestr && new Date(datestr).toString() !== 'Invalid Date')
+  }
+  const getCurrentTime = function (datestr) {
+    if (isValidDateString(datestr)) {
+      return  DateTime.fromISO(datestr).setZone(config.timezone)
+    } else {
+      return DateTime.now().setZone(config.timezone)
+    }
+  }
+  const currentTime = getCurrentTime(datetime)
   const timeArray = getTimeArray(config.startOfDay)
 
   const def = {
