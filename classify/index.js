@@ -23,7 +23,7 @@ if (process.env.USE_SERVER_RECEIVED_DATE === 'true') {
 const main = module.exports = async (dateParam) => {
   const { timezone } = config
 
-  const cacheName = `${buildCacheName(dateParam)}_${DEFAULT_CACHE_NAME}`
+  const cacheName = `${DEFAULT_CACHE_NAME}_${Helpers.buildCacheName(dateParam, config.startOfDay, config.timezone)}`
 
   console.log({cacheName})
 
@@ -402,26 +402,6 @@ const buildRuntimeDate = ({ startOfDay, timezone }) => {
 
   const isoString = runtimeDate.set({ hours, minutes, seconds: 0 }).toISO()
   return new Date(isoString)
-}
-
-/**
- * Returns the classification cache date
- * @param {string} date OPTIONAL: string to force a runtime date format yyyyMMdd (ex: 20220318)
- * @returns 
- */
-
-const buildCacheName = (date) => {
-
-  const currentDate = date ? DateTime.fromISO(date).setZone(config.timezone) : DateTime.now().setZone(config.timezone)
-  const startDate = Helpers.timeExpressionToDateLuxon(config.startOfDay, config.timezone, currentDate.toJSDate())
-  console.log({date,currentDate, startDate, isAfter: currentDate > startDate, isBefore: currentDate < startDate})
-
-  if(currentDate >= startDate) {
-    return currentDate.toFormat('yyyyMMdd')
-  } else {
-    return currentDate.plus({days: -1}).toFormat('yyyyMMdd')
-  }
-
 }
 
 if (require.main === module) {
