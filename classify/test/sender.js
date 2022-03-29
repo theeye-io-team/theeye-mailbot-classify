@@ -14,15 +14,15 @@ const nodemailer = require('nodemailer')
 const filters = require('../../filters')
 
 const main = module.exports = async (dateParam) => {
-
-  const cacheName = `${DEFAULT_CACHE_NAME}_${Helpers.buildCacheName(dateParam, config.startOfDay, config.timezone)}`
-  console.log({cacheName})
+  const cacheName = `${DEFAULT_CACHE_NAME}_${Helpers.buildCacheName(dateParam, config)}`
+  console.log({ cacheName })
 
   const cache = new Cache({ cacheId: CACHE_NAME })
   const cacheData = cache.get()
 
   const classificationCache = new ClassificationCache({
-    cacheId: cacheName
+    cacheId: cacheName,
+    runtimeDate: Helpers.buildRuntimeDate(dateParam, config)
   })
 
   const classifyCacheData = classificationCache.data
@@ -39,7 +39,7 @@ const main = module.exports = async (dateParam) => {
     const startDate =
       Helpers.getFormattedThresholdDate(thresholds.start, timezone, runtimeDate, config.startOfDay)
 
-      // console.log(startDate)
+    // console.log(startDate)
 
     if (startDate > currentDate) {
       console.log(`waiting until ${startDate}`)
@@ -60,12 +60,12 @@ const main = module.exports = async (dateParam) => {
 
     const transport = nodemailer.createTransport(config.sender.transport)
     console.log('sending email')
-    await transport.sendMail({
-      from: config.from,
-      subject: filter.subject,
-      to: 'patricia-theeye@outlook.com',
-      html: filter.body
-    })
+    // await transport.sendMail({
+    //   from: config.from,
+    //   subject: filter.subject,
+    //   to: 'patricia-theeye@outlook.com',
+    //   html: filter.body
+    // })
 
     cacheData[hash] = true
   }

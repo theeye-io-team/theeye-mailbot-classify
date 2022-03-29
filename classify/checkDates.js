@@ -9,8 +9,6 @@ const getTimeArray = (time) => {
   }
 }
 
-
-
 const checkWeekend = (def) => {
   console.log('checkWeekend')
 
@@ -61,15 +59,14 @@ const checkHoliday = (def) => {
 }
 
 const main = module.exports = async (datetime = null) => {
-
-  console.log({datetime})
+  console.log({ datetime })
 
   const isValidDateString = function (datestr) {
     return (datestr && new Date(datestr).toString() !== 'Invalid Date')
   }
   const getCurrentTime = function (datestr) {
     if (isValidDateString(datestr)) {
-      return  DateTime.fromISO(datestr).setZone(config.timezone)
+      return DateTime.fromISO(datestr).setZone(config.timezone)
     } else {
       return DateTime.now().setZone(config.timezone)
     }

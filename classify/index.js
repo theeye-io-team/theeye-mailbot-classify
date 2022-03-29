@@ -23,13 +23,13 @@ if (process.env.USE_SERVER_RECEIVED_DATE === 'true') {
 const main = module.exports = async (dateParam) => {
   const { timezone } = config
 
-  const cacheName = `${DEFAULT_CACHE_NAME}_${Helpers.buildCacheName(dateParam, config.startOfDay, config.timezone)}`
+  const cacheName = `${DEFAULT_CACHE_NAME}_${Helpers.buildCacheName(dateParam, config)}`
 
-  console.log({cacheName})
+  console.log({ cacheName })
 
   const classificationCache = new ClassificationCache({
     cacheId: cacheName,
-    runtimeDate: buildRuntimeDate(config)
+    runtimeDate: Helpers.buildRuntimeDate(dateParam, config)
   })
 
   const cacheData = classificationCache.data
@@ -387,25 +387,6 @@ const indicatorState = (date, lowFilterDate, highFilterDate, criticalFilterDate)
   }
 
   return { state, severity }
-}
-
-/**
- *
- * @param {Object} config object with mailbot configuration properties
- * @prop {String} startOfDay HH:mm
- * @prop {String} timezone
- *
- * @return {Date} date object
- *
- */
-const buildRuntimeDate = ({ startOfDay, timezone }) => {
-  const runtimeDate = DateTime.now().setZone(timezone)
-
-  const hours = startOfDay.substring(0, 2)
-  const minutes = startOfDay.substring(3, 5)
-
-  const isoString = runtimeDate.set({ hours, minutes, seconds: 0 }).toISO()
-  return new Date(isoString)
 }
 
 if (require.main === module) {
