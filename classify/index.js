@@ -144,50 +144,13 @@ const main = module.exports = async (dateParam) => {
     }
   }
 
-  const updateIndicators = () => {
-    const acls = getAcls()
-    if (!acls) { return }
-    const aclsAll = [].concat(acls.manager, acls.operator, acls.administrator)
-    const orderedCache = Helpers.orderCache(classificationCache, timezone, runtimeDate, config.startOfDay)
-
-    return Promise.all([
-      IndicatorHandler.handleProgressIndicator(orderedCache, aclsAll).catch(err => console.log(err)),
-      IndicatorHandler.handleSummaryIndicator(orderedCache, progressDetail = false, onlyWaiting = false, acls.administrator).catch(err => console.log(err)),
-      IndicatorHandler.handleSummaryIndicator(orderedCache, progressDetail = true, onlyWaiting = false, acls.operator).catch(err => console.log(err)),
-      IndicatorHandler.handleSummaryIndicator(orderedCache, progressDetail = true, onlyWaiting = true, acls.manager).catch(err => console.log(err)),
-      IndicatorHandler.handleStatusIndicator(orderedCache, acls.administrator).catch(err => console.log(err))
-    ])
-  }
-
-  await updateIndicators()
+  await IndicatorHandler.updateIndicators(classificationCache)
 
   await IndicatorHandler.orderIndicators('summary')
 
   await mailBot.closeConnection()
 
   return 'ok'
-}
-
-/**
- * Ensure acls are initialized and in correct format.
- * Else initialize
- */
-const getAcls = () => {
-  const acls = config?.acls
-  if (!acls) { return null }
-
-  const init = (key) => {
-    if (!Array.isArray(acls[key])) {
-      return []
-    }
-    return acls[key]
-  }
-
-  return {
-    manager: init('manager'),
-    operator: init('operator'),
-    administrator: init('administrator')
-  }
 }
 
 const getMessageDate = ({ message, filter, timezone }) => {
@@ -260,7 +223,7 @@ const setTimezone = (date, timezone) => {
  */
 
 const sendAlert = async (filter, state, severity) => {
-  const recipients = getAcls()
+  const recipients = Helpers.getAcls(config)
   if (!recipients) {
     console.log('Notification: no recipients defined')
     return true
