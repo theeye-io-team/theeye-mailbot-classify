@@ -220,7 +220,7 @@ const handleSummaryIndicator = async (classificationData, progressDetail, onlyWa
         data-task-arguments='["${eachFilter}", "${classificationData.data.runtimeDate}"]' class="btn btn-primary">Dismiss</button></td>`
       }
 
-      if (!progressDetail && !onlyWaiting && !filterData.solved && !filterData.result.state) {
+      if (!progressDetail && !onlyWaiting && ((!filterData.solved && !filterData.result.state) || (filterData.solved))) {
         filterValue = `${filterValue} <td style="background-color:${rowColor}"></td>`
       }
 
