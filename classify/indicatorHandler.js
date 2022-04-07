@@ -24,7 +24,7 @@ module.exports = {
     const acls = Helpers.getAcls(config)
     if (!acls) { return }
     const aclsAll = [].concat(acls.manager, acls.operator, acls.administrator)
-    const orderedCache = Helpers.orderCache(classificationCache, config.timezone, DateTime.fromISO(new Date(classificationCache.data.runtimeDate).toISOString()), config.startOfDay)
+    const orderedCache = Helpers.orderCache(classificationCache, config.timezone, DateTime.fromISO(classificationCache.data.runtimeDate), config.startOfDay)
 
     return Promise.all([
       handleProgressIndicator(orderedCache, aclsAll).catch(err => console.log(err)),
@@ -231,25 +231,26 @@ const handleSummaryIndicator = async (classificationData, progressDetail, onlyWa
       }
 
       // Adding blank space for white Waiting
-      if (!progressDetail && !onlyWaiting && ((!filterData.solved && !filterData.result.state))) {
+      if (!progressDetail && !onlyWaiting && (
+        (!filterData.solved && !filterData.result.state) ||
+          (filterData.solved && 
+            (!filterData.manuallyResolved ||
+              (filterData.manuallyResolved && !config.manuallyResolved.enable)
+            )
+          ))) {
         filterValue = `${filterValue} <td style="background-color:${rowColor}">
           </td>`
       }
 
       //Check for manually resolved info enabled
-      if (!progressDetail && !onlyWaiting && ((filterData.solved && filterData.manuallyResolved && config.manuallyResolved.enable))) {
+      if (!progressDetail && !onlyWaiting && (
+        (filterData.solved && filterData.manuallyResolved && config.manuallyResolved.enable))) {
         filterValue = `${filterValue} <td style="background-color:${rowColor};">
           <div style="color:${resultStyle}">
           ${config.manuallyResolved.label || 'Manual'}&nbsp;
           <i style="color:${resultStyle}" class="${config.manuallyResolved.icon}">
           </i>
           </div>
-          </td>`
-      }
-
-      //Blank space for automatically resolved or manually resolved info disabled
-      if (!progressDetail && !onlyWaiting && ((filterData.solved && (!filterData.manuallyResolved || (filterData.manuallyResolved && !config.manuallyResolved.enabled))))) {
-        filterValue = `${filterValue} <td style="background-color:${rowColor}">
           </td>`
       }
 
