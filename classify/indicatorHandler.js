@@ -221,7 +221,7 @@ const handleSummaryIndicator = async (classificationData, progressDetail, onlyWa
       if (!progressDetail && !onlyWaiting && !filterData.solved && filterData.result.state /*&& filterData.result.state !== 'normal'*/) {
         filterValue = `${filterValue} <td style="background-color:${rowColor}">
           <button data-hook="launch-task" data-task-id="${config.resolveTaskID || null}" 
-          data-task-arguments='[{"value:${eachFilter}"}, {"value:${classificationData.data.runtimeDate}"}]' 
+          data-task-arguments='[{"value":"${eachFilter}"}, {"value":"${classificationData.data.runtimeDate}"}]' 
           class="${config.dismissButton.class || 'btn btn-primary'}">
           ${config.dismissButton.label || 'Dismiss'}&nbsp;
           <i class="${config.dismissButton.icon}">
