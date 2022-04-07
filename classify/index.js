@@ -129,7 +129,7 @@ const main = module.exports = async (dateParam) => {
     }
 
     if (!found) {
-      const { state, severity } = indicatorState(currentDate, lowFilterDate, highFilterDate, criticalFilterDate)
+      const { state, severity } = Helpers.indicatorState(currentDate, lowFilterDate, highFilterDate, criticalFilterDate)
       let sentAlert = cacheData[filterHash].alert[severity]
 
       if (!sentAlert) {
@@ -300,56 +300,6 @@ const filterData = (filter) => {
       critical: false
     }
   }
-}
-
-/**
- *
- * @param {DateTime} currentDate
- * @param {DateTime} lowFilterDate
- * @param {DateTime} highFilterDate
- * @param {DateTime} criticalFilterDate
- * @returns {Object} {state, severity}
- */
-const indicatorState = (date, lowFilterDate, highFilterDate, criticalFilterDate) => {
-  let state, severity
-
-  if (lowFilterDate) {
-    if (date < lowFilterDate) {
-      state = 'normal'
-      severity = 'low'
-    }
-
-    if (date > lowFilterDate) {
-      state = 'failure'
-      severity = 'low'
-    }
-  }
-
-  if (highFilterDate) {
-    if (!lowFilterDate && date < highFilterDate) {
-      state = 'normal'
-      severity = 'low'
-    }
-
-    if (date > highFilterDate) {
-      state = 'failure'
-      severity = 'high'
-    }
-  }
-
-  if (criticalFilterDate) {
-    if (!lowFilterDate && !highFilterDate && date < criticalFilterDate) {
-      state = 'normal'
-      severity = 'low'
-    }
-
-    if (date > criticalFilterDate) {
-      state = 'failure'
-      severity = 'critical'
-    }
-  }
-
-  return { state, severity }
 }
 
 if (require.main === module) {

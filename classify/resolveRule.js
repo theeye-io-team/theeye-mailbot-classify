@@ -16,8 +16,18 @@ const main = module.exports = async (hash, date) => {
   })
 
   const hashData = classificationCache.getHashData(hash)
+  const resolveDate = DateTime.now().setZone(config.timezone)
+
+  const lowFilterDate = Helpers.getFormattedThresholdDate(hashData.data.low, config.timezone, classificationCache.runtimeDate, config.startOfDay)
+  const highFilterDate = Helpers.getFormattedThresholdDate(hashData.data.high, config.timezone, classificationCache.runtimeDate, config.startOfDay)
+  const criticalFilterDate = Helpers.getFormattedThresholdDate(hashData.data.critical, config.timezone, classificationCache.runtimeDate, config.startOfDay)
+
+  const { state, severity } = Helpers.indicatorState(resolveDate, lowFilterDate, highFilterDate, criticalFilterDate)
+
   hashData.processed = true
-  hashData.data.solved = DateTime.now().setZone(config.timezone).toFormat('HH:mm')
+  hashData.data.solved = resolveDate.toFormat('HH:mm')
+  hashData.data.result.state = state
+  hashData.data.result.severity = severity
   hashData.data.manuallyResolved = true
   return classificationCache.setHashData(hash, hashData)
 }
