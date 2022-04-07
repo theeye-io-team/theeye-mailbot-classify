@@ -15,12 +15,10 @@ const main = module.exports = async (hash, date) => {
     runtimeDate: Helpers.buildRuntimeDate(date, config)
   })
 
-  console.log(classificationCache)
-
   const hashData = classificationCache.getHashData(hash)
   hashData.processed = true
   hashData.data.solved = DateTime.now().setZone(config.timezone).toFormat('HH:mm')
-  console.log(hashData)
+  hashData.data.manuallyResolved = true
   return classificationCache.setHashData(hash, hashData)
 }
 

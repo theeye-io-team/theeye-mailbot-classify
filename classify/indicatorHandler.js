@@ -215,16 +215,48 @@ const handleSummaryIndicator = async (classificationData, progressDetail, onlyWa
           <td style="background-color:${rowColor}">${filterData.critical}</td>
           <td style="background-color:${rowColor}">${filterData.solved}</td>`
 
-      if (!progressDetail && !onlyWaiting && !filterData.solved && filterData.result.state && filterData.result.state !== 'normal') {
-        filterValue = `${filterValue} <td style="background-color:${rowColor}"><button data-hook="launch-task" data-task-id="${config.resolveTaskID || null}" 
-        data-task-arguments='["${eachFilter}", "${classificationData.data.runtimeDate}"]' class="btn btn-primary">Dismiss</button></td>`
+      // SUMMARY BUTTON ROW
+
+      // Adding dismiss button
+      if (!progressDetail && !onlyWaiting && !filterData.solved && filterData.result.state /*&& filterData.result.state !== 'normal'*/) {
+        filterValue = `${filterValue} <td style="background-color:${rowColor}">
+          <button data-hook="launch-task" data-task-id="${config.resolveTaskID || null}" 
+          data-task-arguments='[{"value:${eachFilter}"}, {"value:${classificationData.data.runtimeDate}"}]' 
+          class="${config.dismissButton.class || 'btn btn-primary'}">
+          ${config.dismissButton.label || 'Dismiss'}&nbsp;
+          <i class="${config.dismissButton.icon}">
+          </i>
+          </button>
+          </td>`
       }
 
-      if (!progressDetail && !onlyWaiting && ((!filterData.solved && !filterData.result.state) || (filterData.solved))) {
-        filterValue = `${filterValue} <td style="background-color:${rowColor}"></td>`
+      // Adding blank space for white Waiting
+      if (!progressDetail && !onlyWaiting && ((!filterData.solved && !filterData.result.state))) {
+        filterValue = `${filterValue} <td style="background-color:${rowColor}">
+          </td>`
       }
 
-      filterValue = `${filterValue} <td style="background-color:${rowColor};color:${resultStyle}"><b>${resultData}<b></td></tr>`
+      //Check for manually resolved
+      if (!progressDetail && !onlyWaiting && ((filterData.solved && filterData.manuallyResolved))) {
+        filterValue = `${filterValue} <td style="background-color:${rowColor};">
+          <div style="color:${resultStyle}">
+          ${config.manuallyResolved.label || 'Manual'}&nbsp;
+          <i style="color:${resultStyle}" class="${config.manuallyResolved.icon}">
+          </i>
+          </div>
+          </td>`
+      }
+
+      //Blank space for automatically resolved
+      if (!progressDetail && !onlyWaiting && ((filterData.solved && !filterData.manuallyResolved))) {
+        filterValue = `${filterValue} <td style="background-color:${rowColor}">
+          </td>`
+      }
+
+      filterValue = `${filterValue} <td style="background-color:${rowColor};color:${resultStyle}">
+        <b>${resultData}<b>
+        </td>
+        </tr>`
 
       if (progressDetail && !onlyWaiting && filterData.result.state && filterData.result.state !== 'normal') {
         elements++
