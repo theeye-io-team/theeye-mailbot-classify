@@ -236,8 +236,8 @@ const handleSummaryIndicator = async (classificationData, progressDetail, onlyWa
           </td>`
       }
 
-      //Check for manually resolved
-      if (!progressDetail && !onlyWaiting && ((filterData.solved && filterData.manuallyResolved))) {
+      //Check for manually resolved info enabled
+      if (!progressDetail && !onlyWaiting && ((filterData.solved && filterData.manuallyResolved && config.manuallyResolved.enable))) {
         filterValue = `${filterValue} <td style="background-color:${rowColor};">
           <div style="color:${resultStyle}">
           ${config.manuallyResolved.label || 'Manual'}&nbsp;
@@ -247,8 +247,8 @@ const handleSummaryIndicator = async (classificationData, progressDetail, onlyWa
           </td>`
       }
 
-      //Blank space for automatically resolved
-      if (!progressDetail && !onlyWaiting && ((filterData.solved && !filterData.manuallyResolved))) {
+      //Blank space for automatically resolved or manually resolved info disabled
+      if (!progressDetail && !onlyWaiting && ((filterData.solved && (!filterData.manuallyResolved || (filterData.manuallyResolved && !config.manuallyResolved.enabled))))) {
         filterValue = `${filterValue} <td style="background-color:${rowColor}">
           </td>`
       }
