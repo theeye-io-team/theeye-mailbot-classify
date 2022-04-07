@@ -1,5 +1,6 @@
 const config = require('../lib/config').decrypt()
 const Helpers = require('../lib/helpers')
+const IndicatorHandler = require('./indicatorHandler')
 const { DateTime } = require('luxon')
 const ClassificationCache = require('./cache')
 
@@ -29,7 +30,10 @@ const main = module.exports = async (hash, date) => {
   hashData.data.result.state = state
   hashData.data.result.severity = severity
   hashData.data.manuallyResolved = true
-  return classificationCache.setHashData(hash, hashData)
+  classificationCache.setHashData(hash, hashData)
+  await IndicatorHandler.updateIndicators(classificationCache)
+  await IndicatorHandler.orderIndicators('summary')
+  return true
 }
 
 if (require.main === module) {
