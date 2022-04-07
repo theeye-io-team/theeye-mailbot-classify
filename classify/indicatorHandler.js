@@ -32,7 +32,7 @@ module.exports = {
       handleSummaryIndicator(orderedCache, progressDetail = false, onlyWaiting = false, acls.administrator).catch(err => console.log(err)),
       // Indicador solo fallas
       handleSummaryIndicator(orderedCache, progressDetail = true, onlyWaiting = false, acls.operator).catch(err => console.log(err)),
-      // Indicador de solo fallas (waiting)
+      // Indicador de solo fallas (solo para waiting)
       handleSummaryIndicator(orderedCache, progressDetail = true, onlyWaiting = true, acls.manager).catch(err => console.log(err)),
       // Indicador estado (past-present-future)
       handleStatusIndicator(orderedCache, acls.administrator).catch(err => console.log(err))
@@ -235,7 +235,7 @@ const handleSummaryIndicator = async (classificationData, progressDetail, onlyWa
         (!filterData.solved && !filterData.result.state) ||
           (filterData.solved && 
             (!filterData.manuallyResolved ||
-              (filterData.manuallyResolved && !config.manuallyResolved.enable)
+              (filterData.manuallyResolved && !config.manuallyResolvedAlarm.display)
             )
           ))) {
         filterValue = `${filterValue} <td style="background-color:${rowColor}">
@@ -244,11 +244,11 @@ const handleSummaryIndicator = async (classificationData, progressDetail, onlyWa
 
       //Check for manually resolved info enabled
       if (!progressDetail && !onlyWaiting && (
-        (filterData.solved && filterData.manuallyResolved && config.manuallyResolved.enable))) {
+        (filterData.solved && filterData.manuallyResolved && config.manuallyResolvedAlarm.display))) {
         filterValue = `${filterValue} <td style="background-color:${rowColor};">
           <div style="color:${resultStyle}">
-          ${config.manuallyResolved.label || 'Manual'}&nbsp;
-          <i style="color:${resultStyle}" class="${config.manuallyResolved.icon}">
+          ${config.manuallyResolvedAlarm.label || 'Manual'}&nbsp;
+          <i style="color:${resultStyle}" class="${config.manuallyResolvedAlarm.icon}">
           </i>
           </div>
           </td>`
