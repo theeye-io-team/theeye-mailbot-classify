@@ -14,13 +14,13 @@ const main = module.exports = async (hash, date) => {
     cacheId: cacheName,
     runtimeDate: Helpers.buildRuntimeDate(date, config)
   })
-
+  
   const hashData = classificationCache.getHashData(hash)
   const resolveDate = DateTime.now().setZone(config.timezone)
-
-  const lowFilterDate = Helpers.getFormattedThresholdDate(hashData.data.low, config.timezone, classificationCache.runtimeDate, config.startOfDay)
-  const highFilterDate = Helpers.getFormattedThresholdDate(hashData.data.high, config.timezone, classificationCache.runtimeDate, config.startOfDay)
-  const criticalFilterDate = Helpers.getFormattedThresholdDate(hashData.data.critical, config.timezone, classificationCache.runtimeDate, config.startOfDay)
+  
+  const lowFilterDate = Helpers.getFormattedThresholdDate(hashData.data.low, config.timezone, DateTime.fromISO(classificationCache.data.runtimeDate), config.startOfDay)
+  const highFilterDate = Helpers.getFormattedThresholdDate(hashData.data.high, config.timezone, DateTime.fromISO(classificationCache.data.runtimeDate), config.startOfDay)
+  const criticalFilterDate = Helpers.getFormattedThresholdDate(hashData.data.critical, config.timezone, DateTime.fromISO(classificationCache.data.runtimeDate), config.startOfDay)
 
   const { state, severity } = Helpers.indicatorState(resolveDate, lowFilterDate, highFilterDate, criticalFilterDate)
 
