@@ -30,6 +30,7 @@ const main = module.exports = async (hash, date) => {
   hashData.data.result.state = state
   hashData.data.result.severity = severity
   hashData.data.manuallyResolved = true
+  hashData.data.manuallyResolvedUser = JSON.parse(process.env.THEEYE_JOB_USER)?.username || null
   classificationCache.setHashData(hash, hashData)
   await IndicatorHandler.updateIndicators(classificationCache)
   await IndicatorHandler.orderIndicators('summary')
