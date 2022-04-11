@@ -5,7 +5,6 @@ const fs = require('fs')
 const config = require('../lib/config').decrypt()
 
 Files.access_token = config.api.accessToken
-Files.customer_name =  JSON.parse(process.env.THEEYE_ORGANIZATION_NAME || '"hsbc"')
 
 const baseUrl = 'https://www.argentina.gob.ar/interior/feriados-nacionales-'
 const browserOptions = {

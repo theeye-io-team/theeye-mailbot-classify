@@ -3,7 +3,6 @@ const config = require('../lib/config').decrypt()
 const Files = require('../lib/file')
 
 Files.access_token = config.api.accessToken
-Files.customer_name =  JSON.parse(process.env.THEEYE_ORGANIZATION_NAME || '"hsbc"')
 
 const getTimeArray = (time) => {
   return {
