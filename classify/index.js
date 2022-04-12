@@ -112,7 +112,7 @@ const main = module.exports = async (dateParam) => {
             // no importa si llega antes de tiempo.
             found = true
 
-            const { state, severity } = indicatorState(mailDate, lowFilterDate, highFilterDate, criticalFilterDate)
+            const { state, severity } = Helpers.indicatorState(mailDate, lowFilterDate, highFilterDate, criticalFilterDate)
 
             cacheData[filterHash].data.solved = mailDate.toFormat('HH:mm')
             cacheData[filterHash].data.result.state = state
