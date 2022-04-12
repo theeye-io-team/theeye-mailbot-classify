@@ -6,7 +6,7 @@ const config = require('../lib/config').decrypt()
 
 Files.access_token = config.api.accessToken
 
-const baseUrl = 'https://www.argentina.gob.ar/interior/feriados-nacionales-'
+const baseUrl = config.feriados.baseUrl
 const browserOptions = {
     headless: true,
     handleSIGINT: false,
@@ -51,26 +51,16 @@ const main = module.exports = async (year) => {
         return eles
     }, year)
     
-    fs.writeFileSync('./feriados.json', JSON.stringify(feriados))
 
     const fileData = {
-        filename: 'feriados.json',
+        filename: config.feriados.filename,
         description: `Automatically generated on ${new Date().toISOString()}`,
-        is_script: 'true',
-        extension: 'json',
-        mimetype: '-',
-        file: fs.createReadStream('./feriados.json')
+        contentType: 'application/json',
+        content: JSON.stringify(feriados, null, 2)
     }
 
     const file = new Files(fileData)
-
-    file.access_token = Files.access_token
-    file.customer_name = Files.customer_name
-    
-    await file.upsert()
-
-    fs.unlinkSync('./feriados.json')
-
+    return await file.upsert()
 }
 
 if(require.main === module) {
