@@ -42,7 +42,8 @@ const main = module.exports = async (year) => {
                     if (/\([a|b|c]\)$/.test(text) === false) {
                         const day = Number(text.split('.')[0])
                         if(text || day!==0) {
-                            eles.push( {year, month:index + 1, day, text })
+                            const month = String(index + 1)
+                            eles.push(`${String(day).length === 1 ? `0${day}` : day}-${month.length === 1 ? `0${month}` : month}-${year}`)
                         }
                     }
                 })

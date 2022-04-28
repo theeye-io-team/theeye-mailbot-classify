@@ -43,8 +43,7 @@ const checkHoliday = async (def) => {
   console.log(holidays)
 
   for (const holiday of holidays) {
-    const date = `${String(holiday.day).length < 2 ? `0${holiday.day}` : holiday.day}-${String(holiday.month).length < 2 ? `0${holiday.month}` : holiday.month}-${holiday.year}`
-    const holidayDate = DateTime.fromFormat(date, 'dd-MM-yyyy', { zone: config.timezone })
+    const holidayDate = DateTime.fromFormat(holiday, 'dd-MM-yyyy', { zone: config.timezone })
     const holidayTime = holidayDate.set({ hour: def.startOfDay.timeArray.hour, minute: def.startOfDay.timeArray.min })
 
     console.log({ holidayDate: holidayDate.toISO(), currentDate: def.currentDate.toISO(), yesterdayDate: def.yesterdayDate.toISO() })
