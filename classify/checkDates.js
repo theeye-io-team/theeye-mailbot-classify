@@ -38,7 +38,7 @@ const checkWeekend = (def) => {
 const checkHoliday = async (def) => {
   console.log('checkHoliday')
 
-  const holidays = await Files.Download({filename:'feriados.json'})
+  const holidays = await Files.Download({filename:config.feriados.filename || 'feriados.json'})
 
   console.log(holidays)
 

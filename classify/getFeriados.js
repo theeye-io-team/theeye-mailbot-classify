@@ -54,7 +54,7 @@ const main = module.exports = async (year) => {
     
 
     const fileData = {
-        filename: config.feriados.filename,
+        filename: config.feriados.filename || 'feriados.json',
         description: `Automatically generated on ${new Date().toISOString()}`,
         contentType: 'application/json',
         content: JSON.stringify(feriados, null, 2)
