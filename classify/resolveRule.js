@@ -4,17 +4,9 @@ const IndicatorHandler = require('./indicatorHandler')
 const { DateTime } = require('luxon')
 const ClassificationCache = require('./cache')
 
-const DEFAULT_CACHE_NAME = process.env.DEFAULT_CACHE_NAME || 'classification'
-
 const main = module.exports = async (hash, date) => {
-  const cacheName = `${DEFAULT_CACHE_NAME}_${Helpers.buildCacheName(date, config)}`
 
-  console.log({ cacheName })
-
-  const classificationCache = new ClassificationCache({
-    cacheId: cacheName,
-    runtimeDate: Helpers.buildRuntimeDate(date, config)
-  })
+  const classificationCache = new ClassificationCache({ date, config })
   
   const hashData = classificationCache.getHashData(hash)
   const resolveDate = DateTime.now().setZone(config.timezone)
