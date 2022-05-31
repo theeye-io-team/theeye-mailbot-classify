@@ -48,11 +48,50 @@ class ClassificationCache extends Cache {
     return this.data[hash]
   }
 
-  setHashData (hash, data) {
-    this.data[hash] = data
+  createHashData (hash, data) {
+    this.data[hash] = dataMap(data)
+    this.save(this.data)
+    return this
+  }
+
+  updateHashData(hash, updates) {
+    this.data[hash] = updates
     this.save(this.data)
     return this
   }
 }
+
+/**
+ *
+ * @param {Object} filter
+ * @returns {Object} {dataPayload}
+ */
+const dataMap = (data) => {
+  return {
+    data: {
+      indicatorTitle: data.indicatorTitle,
+      indicatorDescription: data.indicatorDescription,
+      from: data.from,
+      subject: data.subject,
+      body: data.body,
+      start: data.thresholdTimes.start,
+      low: data.thresholdTimes.low,
+      high: data.thresholdTimes.high,
+      critical: data.thresholdTimes.critical,
+      solved: '',
+      result: {
+        state: '',
+        severity: ''
+      }
+    },
+    processed: false,
+    alert: {
+      low: false,
+      high: false,
+      critical: false
+    }
+  }
+}
+
 
 module.exports = ClassificationCache
