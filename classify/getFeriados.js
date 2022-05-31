@@ -60,8 +60,7 @@ const main = module.exports = async (year) => {
         content: JSON.stringify(feriados, null, 2)
     }
 
-    const file = new Files(fileData)
-    return await file.upsert()
+    return Files.Upsert(fileData)
 }
 
 if(require.main === module) {
