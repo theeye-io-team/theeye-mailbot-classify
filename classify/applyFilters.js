@@ -21,7 +21,7 @@ const main = module.exports = async (filters, classificationCache) => {
     const filterHash = classificationCache.createHash(JSON.stringify(filter))
 
     if (!cacheData[filterHash]) {
-      classificationCache.setHashData(filterHash, filterData(filter))
+      classificationCache.createHashData(filterHash, filter)
     }
 
     if (classificationCache.isAlreadyProcessed(filterHash) === true) {
@@ -89,7 +89,7 @@ const main = module.exports = async (filters, classificationCache) => {
             cacheData[filterHash].processed = true
 
             await message.move()
-            classificationCache.setHashData(filterHash, cacheData[filterHash])
+            classificationCache.updateHashData(filterHash, cacheData[filterHash])
           }
         } else {
           console.log('Old message')
@@ -109,7 +109,7 @@ const main = module.exports = async (filters, classificationCache) => {
       cacheData[filterHash].data.result.state = state
       cacheData[filterHash].data.result.severity = severity
 
-      classificationCache.setHashData(filterHash, cacheData[filterHash])
+      classificationCache.updateHashData(filterHash, cacheData[filterHash])
     }
   }
 
@@ -230,36 +230,3 @@ const sendAlert = async (filter, state, severity) => {
 
   return false
 }
-
-/**
- *
- * @param {Object} filter
- * @returns {Object} {dataPayload}
- */
-const filterData = (filter) => {
-  return {
-    data: {
-      indicatorTitle: filter.indicatorTitle,
-      indicatorDescription: filter.indicatorDescription,
-      from: filter.from,
-      subject: filter.subject,
-      body: filter.body,
-      start: filter.thresholdTimes.start,
-      low: filter.thresholdTimes.low,
-      high: filter.thresholdTimes.high,
-      critical: filter.thresholdTimes.critical,
-      solved: '',
-      result: {
-        state: '',
-        severity: ''
-      }
-    },
-    processed: false,
-    alert: {
-      low: false,
-      high: false,
-      critical: false
-    }
-  }
-}
-

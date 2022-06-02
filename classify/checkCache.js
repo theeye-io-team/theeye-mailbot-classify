@@ -5,6 +5,9 @@ const IndicatorHandler = require('./indicatorHandler')
 const ClassificationCache = require('./cache')
 const Helpers = require('../lib/helpers')
 const config = require('../lib/config').decrypt()
+const FileApi = require('../lib/file')
+
+//FileApi.access_token = process.env.THEEYE_ACCESS_TOKEN
 
 const fs = require('fs')
 
@@ -21,34 +24,55 @@ const main = module.exports = async (rulesFileEvent) => {
     throw err
   }
 
-  const checked = []
   const classificationCache = new ClassificationCache({ config })
 
   for (const filter of currentFilters) {
-    let filterHash
     // chequeo de cambios. cualquier cambio require actualizar los indicadores
-    const fingerprint = classificationCache.createHash(JSON.stringify(filter))
+    const fingerprint = createFilterFingerprint(filter, classificationCache)
 
-    if (!filter.hash) {
-      filterHash = fingerprint
-      filter.hash = filterHash
+    // si no tiene hash, se le asigna uno que coincide con el id que figura en la cache
+    if (!filter.id) {
+      // se le agrega la info necesaria para el seguimiento de las reglas
+      filter.id = fingerprint 
+      filter.fingerprint = fingerprint
+      filter.enabled = true
+      filter.last_update = new Date()
+      filter.creation_date = new Date()
       localChanges = true
+      console.log(`filter ${filter.id} was upgraded. id/hash added to filter`)
     }
 
-    const data = classificationCache.getHashData(filterHash)
+    // esta en cache?
+    const data = classificationCache.getHashData(filter.id)
     if (!data) {
-      // create
-      console.log(`filter ${JSON.stringify(filter)} added`)
+      // es una regla nueva
+      console.log(`filter ${filter.id} created`)
     } else {
-      checked.push(filterHash)
-      // was updated ?
+      if (filter.fingerprint !== fingerprint) {
+        console.log(`filter ${filter.id} update`)
+        filter.last_update = new Date()
+        filter.fingerprint = fingerprint
+        localChanges = true
+      }
     }
   }
 
   if (localChanges === true) {
+    console.log('Local changes. File api upgrades required')
+    const file = await FileApi.GetById(rulesFileEvent.config.file)
+    file.content = JSON.stringify(currentFilters, null, 2)
+    await file.update()
   }
 
   return {}
+}
+
+const createFilterFingerprint = (filter, cache) => {
+  const payload = Object.assign({}, filter)
+  delete payload.fingerprint
+  delete payload.creation_date
+  delete payload.last_update
+  return cache.createHash(JSON.stringify(payload))
 }
 
 const testPayload = {
@@ -70,5 +94,9 @@ const testPayload = {
 
 
 if (require.main === module) {
-  main(process.argv[2] || testPayload).then(console.log).catch(console.error)
+  main(process.argv[2] || testPayload)
+    .then(console.log)
+    .catch((err) => {
+      console.error(`${err}`)
+    })
 }
