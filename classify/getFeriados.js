@@ -66,5 +66,5 @@ const main = module.exports = async (year) => {
 }
 
 if (require.main === module) {
-  main(process.argv[2]).then(console.log).catch(console.error)
+  main(process.argv[2]).then(console.log).catch(err => console.error(err))
 }

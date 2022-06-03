@@ -6,6 +6,12 @@ const ClassificationCache = require('./cache')
 
 const main = module.exports = async (hash, date) => {
 
+  let jobUser = null
+  try {
+    jobUser = JSON.parse(process.env.THEEYE_JOB_USER)
+  } catch (err) {
+  }
+
   const classificationCache = new ClassificationCache({ date, config })
   
   const hashData = classificationCache.getHashData(hash)
@@ -22,8 +28,8 @@ const main = module.exports = async (hash, date) => {
   hashData.data.result.state = state
   hashData.data.result.severity = severity
   hashData.data.manuallyResolved = true
-  hashData.data.manuallyResolvedUser = JSON.parse(process.env.THEEYE_JOB_USER)?.username || null
-  classificationCache.setHashData(hash, hashData)
+  hashData.data.manuallyResolvedUser = (jobUser?.username || null)
+  classificationCache.createHashData(hash, hashData)
   await IndicatorHandler.updateIndicators(classificationCache)
   await IndicatorHandler.orderIndicators('summary')
   return true
