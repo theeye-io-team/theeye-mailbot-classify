@@ -29,7 +29,9 @@ const main = module.exports = async (hash, date) => {
   hashData.data.result.severity = severity
   hashData.data.manuallyResolved = true
   hashData.data.manuallyResolvedUser = (jobUser?.username || null)
+
   classificationCache.createHashData(hash, hashData)
+
   await IndicatorHandler.updateIndicators(classificationCache)
   await IndicatorHandler.orderIndicators('summary')
   return true
