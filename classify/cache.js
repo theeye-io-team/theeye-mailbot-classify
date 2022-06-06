@@ -2,7 +2,7 @@ const Cache = require('../lib/cache')
 const Helpers = require('../lib/helpers')
 const crypto = require('crypto')
 
-const DEFAULT_CACHE_NAME = process.env.DEFAULT_CACHE_NAME || 'classification'
+const DEFAULT_CACHE_NAME = (process.env.DEFAULT_CACHE_NAME || 'classification')
 const DEFAULT_CACHE_PATH = process.env.DEFAULT_CACHE_PATH
 
 class ClassificationCache extends Cache {
@@ -36,6 +36,14 @@ class ClassificationCache extends Cache {
     return hash.digest('hex')
   }
 
+  createFilterFingerprint (filter) {
+    const payload = Object.assign({}, filter)
+    delete payload.fingerprint
+    delete payload.creation_date
+    delete payload.last_update
+    return this.createHash(JSON.stringify(payload))
+  }
+
   setRuntimeDate (date = null) {
     if (!this.data.runtimeDate) {
       this.data.runtimeDate = (date || new Date())
@@ -48,13 +56,26 @@ class ClassificationCache extends Cache {
     return this.data[hash]
   }
 
-  createHashData (hash, data) {
+  /**
+   * set default values
+   */
+  initHashData (hash, data) {
     this.data[hash] = dataMap(data)
     this.save(this.data)
-    return this
+    return this.data[hash]
   }
 
-  updateHashData(hash, updates) {
+  /**
+   * update filter values
+   * replace only the filter's data
+   */
+  updateHashData (hash, data) {
+    Object.assign(this.data[hash].data, updateDataMap(data))
+    this.save(this.data)
+    return this.data[hash]
+  }
+
+  replaceHashData (hash, updates) {
     this.data[hash] = updates
     this.save(this.data)
     return this
@@ -90,6 +111,20 @@ const dataMap = (data) => {
       high: false,
       critical: false
     }
+  }
+}
+
+const updateDataMap = (data) => {
+  return {
+    indicatorTitle: data.indicatorTitle,
+    indicatorDescription: data.indicatorDescription,
+    from: data.from,
+    subject: data.subject,
+    body: data.body,
+    start: (data.thresholdTimes||data).start,
+    low: (data.thresholdTimes||data).low,
+    high: (data.thresholdTimes||data).high,
+    critical: (data.thresholdTimes||data).critical
   }
 }
 

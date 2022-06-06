@@ -26,9 +26,10 @@ const main = module.exports = async (rulesFileEvent) => {
 
   const classificationCache = new ClassificationCache({ config })
 
-  for (const filter of currentFilters) {
+  for (let index = 0; index < currentFilters.length; index++) {
+    const filter = currentFilters[index]
     // chequeo de cambios. cualquier cambio require actualizar los indicadores
-    const fingerprint = createFilterFingerprint(filter, classificationCache)
+    const fingerprint = classificationCache.createFilterFingerprint(filter)
 
     // si no tiene hash, se le asigna uno que coincide con el id que figura en la cache
     if (!filter.id) {
@@ -39,20 +40,23 @@ const main = module.exports = async (rulesFileEvent) => {
       filter.last_update = new Date()
       filter.creation_date = new Date()
       localChanges = true
-      console.log(`filter ${filter.id} was upgraded. id/hash added to filter`)
+      console.log(`filter [${index}] ${filter.id} was upgraded. id/hash added to filter`)
     }
 
     // esta en cache?
-    const data = classificationCache.getHashData(filter.id)
-    if (!data) {
+    const inCacheFilter = classificationCache.getHashData(filter.id)
+    if (!inCacheFilter) {
       // es una regla nueva
-      console.log(`filter ${filter.id} created`)
+      console.log(`filter [${index}] ${filter.id} is not present in cache.`)
+      // no se hace mas nada. al correr el clasificador la regla se agrega
     } else {
       if (filter.fingerprint !== fingerprint) {
-        console.log(`filter ${filter.id} update`)
+        console.log(`filter [${index}] ${filter.id} fingerprint changed.`)
         filter.last_update = new Date()
         filter.fingerprint = fingerprint
         localChanges = true
+
+        classificationCache.updateHashData(filter.id, filter)
       }
     }
   }
@@ -61,40 +65,18 @@ const main = module.exports = async (rulesFileEvent) => {
     console.log('Local changes. File api upgrades required')
     const file = await FileApi.GetById(rulesFileEvent.config.file)
     file.content = JSON.stringify(currentFilters, null, 2)
-    await file.update()
+    await file.upload()
+    await IndicatorHandler.updateIndicators(classificationCache)
   }
 
   return {}
 }
 
-const createFilterFingerprint = (filter, cache) => {
-  const payload = Object.assign({}, filter)
-  delete payload.fingerprint
-  delete payload.creation_date
-  delete payload.last_update
-  return cache.createHash(JSON.stringify(payload))
-}
-
-const testPayload = {
-  last_event: {},
-  event_name: "changed",
-  type: "file",
-  id: "6286b9b9408718d3ca14964b",
-  config: {
-    file: "6286b9b8408718d3ca14960c",
-    is_manual_path: false,
-    path: "/opt/theeye/classificationRules.json",
-    basename: "classificationRules.json",
-    dirname: "/opt/theeye",
-    os_username: null,
-    os_groupname: null,
-    permissions: null
-  }
-}
-
 
 if (require.main === module) {
-  main(process.argv[2] || testPayload)
+  //main(process.argv[2] || testPayload)
+  const payload = process.argv[2]
+  main(payload)
     .then(console.log)
     .catch((err) => {
       console.error(`${err}`)
