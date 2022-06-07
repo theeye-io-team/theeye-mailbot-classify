@@ -56,6 +56,12 @@ class ClassificationCache extends Cache {
     return this.data[hash]
   }
 
+  deleteHashData (hash) {
+    delete this.data[hash]
+    this.save(this.data)
+    return this
+  }
+
   /**
    * set default values
    */
@@ -65,20 +71,20 @@ class ClassificationCache extends Cache {
     return this.data[hash]
   }
 
+  replaceHashData (hash, data) {
+    this.data[hash] = data
+    this.save(this.data)
+    return this
+  }
+
   /**
    * update filter values
    * replace only the filter's data
    */
-  updateHashData (hash, data) {
+  updateFilterData (hash, data) {
     Object.assign(this.data[hash].data, updateDataMap(data))
     this.save(this.data)
     return this.data[hash]
-  }
-
-  replaceHashData (hash, updates) {
-    this.data[hash] = updates
-    this.save(this.data)
-    return this
   }
 }
 

@@ -15,7 +15,9 @@ const main = module.exports = async (rulesFileEvent) => {
   // cambiamos el contenido de los filtros localmente y debemos actualizar la api.
   // si no fue modificado , evitamos hacer el update del file en la api.
   // si modificamos el archivo permanentemente entra en loop
-  let localChanges = false
+  const checked = []
+  let filtersChanged = false
+  let cacheChanged = false
 
   let currentFilters
   try {
@@ -39,7 +41,7 @@ const main = module.exports = async (rulesFileEvent) => {
       filter.enabled = true
       filter.last_update = new Date()
       filter.creation_date = new Date()
-      localChanges = true
+      filtersChanged = true
       console.log(`filter [${index}] ${filter.id} was upgraded. id/hash added to filter`)
     }
 
@@ -48,24 +50,41 @@ const main = module.exports = async (rulesFileEvent) => {
     if (!inCacheFilter) {
       // es una regla nueva
       console.log(`filter [${index}] ${filter.id} is not present in cache.`)
+      classificationCache.initHashData(filter.id, filter)
       // no se hace mas nada. al correr el clasificador la regla se agrega
     } else {
       if (filter.fingerprint !== fingerprint) {
         console.log(`filter [${index}] ${filter.id} fingerprint changed.`)
         filter.last_update = new Date()
         filter.fingerprint = fingerprint
-        localChanges = true
+        filtersChanged = true
 
-        classificationCache.updateHashData(filter.id, filter)
+        classificationCache.updateFilterData(filter.id, filter)
+      }
+    }
+
+    checked.push(filter.id)
+  }
+
+  // check deleted rules
+  for (let hash in classificationCache.data) {
+    if (hash !== 'runtimeDate') {
+      if (checked.indexOf(hash) === -1) {
+        console.log(`deleted rule ${hash}`)
+        classificationCache.deleteHashData(hash)
+        cacheChanged = true
       }
     }
   }
 
-  if (localChanges === true) {
+  if (filtersChanged === true) {
     console.log('Local changes. File api upgrades required')
     const file = await FileApi.GetById(rulesFileEvent.config.file)
     file.content = JSON.stringify(currentFilters, null, 2)
     await file.upload()
+  }
+
+  if (filtersChanged === true || cacheChanged === true) {
     await IndicatorHandler.updateIndicators(classificationCache)
   }
 
@@ -75,7 +94,7 @@ const main = module.exports = async (rulesFileEvent) => {
 
 if (require.main === module) {
   //main(process.argv[2] || testPayload)
-  const payload = process.argv[2]
+  const payload = JSON.parse(process.argv[2])
   main(payload)
     .then(console.log)
     .catch((err) => {
