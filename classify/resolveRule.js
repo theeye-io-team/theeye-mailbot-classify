@@ -1,3 +1,4 @@
+require('dotenv').config()
 const config = require('../lib/config').decrypt()
 const Helpers = require('../lib/helpers')
 const IndicatorHandler = require('./indicatorHandler')
@@ -30,7 +31,7 @@ const main = module.exports = async (hash, date) => {
   hashData.data.manuallyResolved = true
   hashData.data.manuallyResolvedUser = (jobUser?.username || null)
 
-  classificationCache.initHashData(hash, hashData)
+  classificationCache.replaceHashData(hash, hashData)
 
   await IndicatorHandler.updateIndicators(classificationCache)
   await IndicatorHandler.orderIndicators('summary')
