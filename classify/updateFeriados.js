@@ -14,12 +14,22 @@ const main = module.exports = async ( ) => {
 
     for(const message of messages) {
         const content = await message.getContent()
-        
+
+        const arrayFeriados = parseContent(content.text)
+
+        if(!arrayFeriados.length) {
+            throw new Error('Array sin contenido')
+        }
+
+        if(typeof(arrayFeriados[0]) !== 'string') {
+            throw new Error('Array inválido')
+        }
+       
         const fileData = {
             filename: config.feriados.filename || 'feriados.json',
             description: `Automatically generated on ${new Date().toISOString()}`,
             contentType: 'application/json',
-            content: JSON.stringify(JSON.parse(content.text), null, 2)
+            content: JSON.stringify(arrayFeriados, null, 2)
           }
         
           await Files.Upsert(fileData)
@@ -28,6 +38,14 @@ const main = module.exports = async ( ) => {
 
     return messages
     
+}
+
+const parseContent = (json) => {
+    try {
+        return JSON.parse(json)
+    } catch(err) {
+        throw new Error('Contenido inválido')
+    }
 }
 
 if(require.main === module) {
